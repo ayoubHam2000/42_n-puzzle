@@ -27,7 +27,7 @@ public:
     neighbors.push_back(new_neighbor);
   }
 
-  bool  breath_first_search(node_type target, std::function<bool(node_ptr_type)> call_back)
+  bool  breath_first_search(std::function<bool(node_ptr_type)> call_back)
   {
     std::vector<node_ptr_type>  queue;
 
@@ -73,6 +73,7 @@ public:
   const std::vector<node_ptr_type> &get_neighbors() const {
     return this->neighbors;
   }
+
 };
 
 class Graph

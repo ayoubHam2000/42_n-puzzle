@@ -1,7 +1,6 @@
 #include "n_puzzle.h"
-#include "Sdl_class.hpp"
-#include "Drawer.hpp"
-#include "Graph.hpp"
+#include "./Sdl_class.hpp"
+#include "./Drawer.hpp"
 
 class Global
 {
@@ -10,7 +9,6 @@ public:
   Drawer            &dr;
   std::vector<int>  maze;
   int               maze_size = 25;
-  //Node              &gh;
 
 private:
   Global();
@@ -26,7 +24,7 @@ public:
  * The generated maze is an array of intergers each integer represent the active and deactivate walls
  * as top right bottom left with binary form 
 */
-void  generate_maze(std::vector<int> &maze, int size)
+void  generate_maze(std::vector<int> &maze, int size, std::function<bool(const std::vector<bool> &, int)> refresh)
 {
   std::vector<int>  stack;
   std::vector<int>  neighbors;
@@ -83,15 +81,33 @@ void  generate_maze(std::vector<int> &maze, int size)
     } else {
       stack.pop_back();
     }
+
+
+    if (refresh(visited, cell) == true) //if quit == true
+      return;
+    SDL_Delay(5);
+
   }
 }
 
 
 
-void  draw_maze(Global *g)
+void  draw_maze(Global *g, const std::vector<bool> &visited, int pos)
 {
   int size = g->sdl.width / g->maze_size;
 
+  for (int i = 0; i < g->maze_size; i++){
+    for (int j = 0; j < g->maze_size; j++) {
+      int color = 0x00ff00;
+      int cell_index = j * g->maze_size + i;
+      if (visited[cell_index])
+        color = 0xff0000;
+      if (pos == cell_index)
+        color = 0x0000ff;
+      g->dr.set_color(color);
+      g->dr.rectangle(i * size, j * size, size, size);
+    }
+  }
 
   g->dr.set_color(0xffffff);
   for (int i = 0; i < g->maze_size; i++){
@@ -103,45 +119,32 @@ void  draw_maze(Global *g)
 }
 
 
-void   initialize_graph_rec(Node *node, std::vector<int> &maze, std::vector<bool> &visited, int size)
-{
-  int cell = node->get_data();
-  visited[cell] = true;
-
-  int a = maze[cell];
-  if (!(maze[cell] & 0b1000) && visited[cell - size] == false)
-    node->add_neighbor(new Node(maze[cell - size]));
-  if (!(maze[cell] & 0b0100) && visited[cell + 1] == false)
-    node->add_neighbor(new Node(maze[cell + 1]));
-  if (!(maze[cell] & 0b0010) && visited[cell + size] == false)
-    node->add_neighbor(new Node(maze[cell + size]));
-  if (!(maze[cell] & 0b0001) && visited[cell - 1] == false)
-    node->add_neighbor(new Node(maze[cell - 1]));
-  for (auto n : node->get_neighbors()) {
-    initialize_graph_rec(n, maze, visited, size);
-  }
-}
-
-Node  *initialize_graph(Global *g)
-{
-  Node *root = new Node(0);
-  std::vector<bool> visited;
-  
-  visited.resize(g->maze_size * g->maze_size, false);
-  initialize_graph_rec(root, g->maze, visited, g->maze_size);
-  return root;
-}
 
 void  loop(Global *g)
 {
-  //bool done = false;
+  bool done = false;
 
-  generate_maze(g->maze, g->maze_size);
-  Node *root = initialize_graph(g);
   while (!g->sdl.quit)
   {
-    g->sdl.clear();
-    draw_maze(g);
+    //g->sdl.clear();
+
+    if (done == false) 
+    {
+      generate_maze(g->maze, g->maze_size, [&g](const std::vector<bool> &visited, int pos) {
+        //std::cout << "Called" << std::endl;
+        g->sdl.clear();
+        draw_maze(g, visited, pos);
+        g->sdl.flush();
+        g->sdl.events();
+        //std::cout << g->sdl.buffer_input[0] << std::endl;
+        // while (g->sdl.buffer_input[0] != 79) {
+        //   g->sdl.events();
+        //   SDL_Delay(2);
+        // }
+        return g->sdl.quit;
+      });
+      done = true;
+    }
     g->sdl.flush();
     g->sdl.events();
   }
@@ -149,15 +152,6 @@ void  loop(Global *g)
 
 int main()
 {
-  std::vector<int> v;
-  v.reserve(10);
-  v.push_back(2222222);
-
-  int *a = &v[0];
-
-  std::string str = "AYOUB";
-  
-
   Sdl_class sdl_class = Sdl_class("N_Puzzle", 800, 800);
   Drawer    dr = Drawer(sdl_class);
   Global    g = Global(sdl_class, dr);

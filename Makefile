@@ -1,12 +1,19 @@
-FILES = \
-	Graph.cpp \
+Main = \
 	main.cpp
+
+Examples = \
+	./examples/draw_maze.cpp
+
+FILES = \
+	$(Main)
+
+
 
 #-Wall -Wextra -Werror -g
 # -fsanitize=address
 
-CFLAGS = -std=c++11 -Wall -Wextra  
-INCLUDE = -I ./includes/
+CFLAGS = -std=c++11 -Wall -Wextra  -g
+INCLUDE = -I ./includes/ -I ./classes
 LINKING = -L/usr/local/lib -lSDL2 -lSDL2_image -lm
 
 DEPFLAGS = -MMD -MF $(@:.o=.d)
