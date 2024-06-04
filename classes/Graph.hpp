@@ -24,6 +24,7 @@ public:
 
 public:
   void  add_neighbor(node_ptr_type new_neighbor) {
+    std::cout << "ADD : " << new_neighbor->get_data() << std::endl;
     neighbors.push_back(new_neighbor);
   }
 

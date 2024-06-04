@@ -103,22 +103,74 @@ void  draw_maze(Global *g)
 }
 
 
-void   initialize_graph_rec(Node *node, std::vector<int> &maze, std::vector<bool> &visited, int size)
+#include <iostream>
+#include <string>
+#include <bitset>
+std::string toBinaryString(int number) {
+    const size_t BITS = sizeof(int);  // Number of bits in an int
+    std::bitset<BITS> bitset(number);
+    return bitset.to_string();
+}
+
+
+void   debug(Global *g, int cell)
+{
+  int size = g->sdl.width / g->maze_size;
+
+
+  g->sdl.clear();
+  g->dr.set_color(0xffffff);
+  for (int i = 0; i < g->maze_size; i++){
+    for (int j = 0; j < g->maze_size; j++){
+      g->dr.rectangle_hollow(i * size, j * size, size, size, 1, g->maze[j * g->maze_size + i]);
+    }
+  }
+  g->dr.set_color(0xff0000);
+  int i  = cell % (g->maze_size);
+  int j = cell / g->maze_size;
+  g->dr.rectangle(i * size, j * size, size, size);
+
+      
+  g->sdl.flush();
+  int up = ~g->maze[cell] & 0b1000;
+  int right = ~g->maze[cell] & 0b0100;
+  int down = ~g->maze[cell] & 0b0010;
+  int left = ~g->maze[cell] & 0b0001;
+  std::cout << "cell " << cell << " values " << toBinaryString(g->maze[cell]) << " up " << up << " right " << right << " down " << down << "left " << left << std::endl;
+  
+  SDL_Delay(100);
+  while (true) {
+    g->sdl.events();
+    if (g->sdl.is_in_buffer(79)) {
+      break ;
+    }
+    SDL_Delay(50);
+  }
+  if (g->sdl.quit == true)
+    std::exit(0);
+}
+
+void   initialize_graph_rec(Global *g, Node *node, std::vector<int> &maze, std::vector<bool> &visited, int size)
 {
   int cell = node->get_data();
   visited[cell] = true;
 
+  //debug(g, cell);
+
   int a = maze[cell];
-  if (!(maze[cell] & 0b1000) && visited[cell - size] == false)
-    node->add_neighbor(new Node(maze[cell - size]));
-  if (!(maze[cell] & 0b0100) && visited[cell + 1] == false)
-    node->add_neighbor(new Node(maze[cell + 1]));
-  if (!(maze[cell] & 0b0010) && visited[cell + size] == false)
-    node->add_neighbor(new Node(maze[cell + size]));
-  if (!(maze[cell] & 0b0001) && visited[cell - 1] == false)
-    node->add_neighbor(new Node(maze[cell - 1]));
+  if ((~maze[cell] & 0b1000) && visited[cell - size] == false)
+    node->add_neighbor(new Node(cell - size));
+  if ((~maze[cell] & 0b0100) && visited[cell + 1] == false)
+    node->add_neighbor(new Node(cell + 1));
+  if ((~maze[cell] & 0b0010) && visited[cell + size] == false)
+    node->add_neighbor(new Node(cell + size));
+  if ((~maze[cell] & 0b0001) && visited[cell - 1] == false)
+    node->add_neighbor(new Node(cell - 1));
   for (auto n : node->get_neighbors()) {
-    initialize_graph_rec(n, maze, visited, size);
+    //if (visited[n->get_data()] == false) {
+      std::cout << "explore for: " << n->get_data() << std::endl;
+      initialize_graph_rec(g, n, maze, visited, size);
+    //}
   }
 }
 
@@ -128,7 +180,7 @@ Node  *initialize_graph(Global *g)
   std::vector<bool> visited;
   
   visited.resize(g->maze_size * g->maze_size, false);
-  initialize_graph_rec(root, g->maze, visited, g->maze_size);
+  initialize_graph_rec(g, root, g->maze, visited, g->maze_size);
   return root;
 }
 
