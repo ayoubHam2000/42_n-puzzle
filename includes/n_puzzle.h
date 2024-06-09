@@ -10,5 +10,9 @@
 # include <algorithm>
 # include <random>
 # include <functional>
+# include <cmath>
+# include <set>
+
+# define MAZE_SIZE 25
 
 #endif
