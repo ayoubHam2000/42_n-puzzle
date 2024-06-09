@@ -112,7 +112,7 @@ public:
       bool halt = call_back(node);
       if (halt)
         return true;
-      visited.insert(node);
+      visited.insert(node); //? 
       stack.pop_back();
 
 
