@@ -12,6 +12,8 @@
 # include <functional>
 # include <cmath>
 # include <set>
+# include <sstream>
+# include <fstream>
 
 # define MAZE_SIZE 25
 
