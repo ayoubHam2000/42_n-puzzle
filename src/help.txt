@@ -1,0 +1,11 @@
+Usage: n-puzzle [-f {file_input}] ... [Heuristics] ... [SearchType]
+
+Heuristics:
+--manhattan: uses manhattan distance
+--conflicts: linear conflicts
+--euclidean: euclidean distance
+--hamming: hamming distance aka "tiles out of place"
+
+Search Type:
+-g: greedy search: ignores the g(n) in A* formula f(n) = g(n) + h(n), quickly finds solution.
+-u: uniform cost search: discards the h(n) in A* formula.

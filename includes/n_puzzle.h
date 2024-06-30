@@ -14,7 +14,18 @@
 # include <set>
 # include <sstream>
 # include <fstream>
+# include <queue>
 
-# define MAZE_SIZE 25
+# include "classes/PuzzleState.hpp"
+# include "classes/Configuration.hpp"
+
+bool is_solvable(const std::vector<int> &initial_state, const std::vector<int> &end_state, int puzzle_size);
+bool  a_star(
+  PuzzleState *root,
+  std::function<float(const PuzzleState *, const PuzzleState *)> g,
+  std::function<float(const PuzzleState *)> h,
+  std::function<bool(PuzzleState *)> call_back
+);
+void  solve(PuzzleState &state_0, Configuration &conf);
 
 #endif
