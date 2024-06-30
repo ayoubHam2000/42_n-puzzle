@@ -29,8 +29,11 @@ A function that prioritizes options in search algorithms at each branching step 
 ![](./static/3.jpeg)
 **Admissible Heuristic**: A heuristic is admissible if it never overestimates the true cost to reach the goal.
 
-**Consistent heuristic**: heuristic `h` is consistent if for any node n and its successor n′ \
-$ h(n) ≤ c(n,n′)+h(n′) $
+**Consistent heuristic**: heuristic `h` is consistent if for any node n and its successor n′
+
+$$ 
+h(n) ≤ cost(n,n′)+h(n′)
+$$
 - basically it ensures that the estimated cost to reach the goal from a node does not decrease when transitioning from one node to another.
 
 ![](./static/4.png)
@@ -91,6 +94,7 @@ Search Type:
 
 
 ## Resources
+- [Subject](./static/n_puzzle.pdf)
 - [Graph theory](http://ericshen.net/handouts/ZC-graph.pdf)
 - [Basic graph theory](https://math.mit.edu/~dunkel/Teach/18.S995_2017F/slides/lec26_GraphBasics.pdf)
 - [Graph | Data Structures & Algorithms](https://www.youtube.com/playlist?list=PLqM7alHXFySEaZgcg7uRYJFBnYMLti-nh)
